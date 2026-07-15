@@ -9,38 +9,200 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WaitingRoomRouteImport } from './routes/waiting-room'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as Round2RouteImport } from './routes/round-2'
+import { Route as Round1RouteImport } from './routes/round-1'
+import { Route as ResultsRouteImport } from './routes/results'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as Round1ResultsRouteImport } from './routes/round-1.results'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 
+const WaitingRoomRoute = WaitingRoomRouteImport.update({
+  id: '/waiting-room',
+  path: '/waiting-room',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Round2Route = Round2RouteImport.update({
+  id: '/round-2',
+  path: '/round-2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Round1Route = Round1RouteImport.update({
+  id: '/round-1',
+  path: '/round-1',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResultsRoute = ResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Round1ResultsRoute = Round1ResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => Round1Route,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/results': typeof ResultsRoute
+  '/round-1': typeof Round1RouteWithChildren
+  '/round-2': typeof Round2Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/waiting-room': typeof WaitingRoomRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/round-1/results': typeof Round1ResultsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/results': typeof ResultsRoute
+  '/round-1': typeof Round1RouteWithChildren
+  '/round-2': typeof Round2Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/waiting-room': typeof WaitingRoomRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/round-1/results': typeof Round1ResultsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/results': typeof ResultsRoute
+  '/round-1': typeof Round1RouteWithChildren
+  '/round-2': typeof Round2Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/waiting-room': typeof WaitingRoomRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/round-1/results': typeof Round1ResultsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/results'
+    | '/round-1'
+    | '/round-2'
+    | '/sitemap.xml'
+    | '/waiting-room'
+    | '/admin/dashboard'
+    | '/admin/login'
+    | '/round-1/results'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/results'
+    | '/round-1'
+    | '/round-2'
+    | '/sitemap.xml'
+    | '/waiting-room'
+    | '/admin/dashboard'
+    | '/admin/login'
+    | '/round-1/results'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/results'
+    | '/round-1'
+    | '/round-2'
+    | '/sitemap.xml'
+    | '/waiting-room'
+    | '/admin/dashboard'
+    | '/admin/login'
+    | '/round-1/results'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
+  ResultsRoute: typeof ResultsRoute
+  Round1Route: typeof Round1RouteWithChildren
+  Round2Route: typeof Round2Route
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  WaitingRoomRoute: typeof WaitingRoomRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminLoginRoute: typeof AdminLoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/waiting-room': {
+      id: '/waiting-room'
+      path: '/waiting-room'
+      fullPath: '/waiting-room'
+      preLoaderRoute: typeof WaitingRoomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/round-2': {
+      id: '/round-2'
+      path: '/round-2'
+      fullPath: '/round-2'
+      preLoaderRoute: typeof Round2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/round-1': {
+      id: '/round-1'
+      path: '/round-1'
+      fullPath: '/round-1'
+      preLoaderRoute: typeof Round1RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/results': {
+      id: '/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof ResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +210,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/round-1/results': {
+      id: '/round-1/results'
+      path: '/results'
+      fullPath: '/round-1/results'
+      preLoaderRoute: typeof Round1ResultsRouteImport
+      parentRoute: typeof Round1Route
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface Round1RouteChildren {
+  Round1ResultsRoute: typeof Round1ResultsRoute
+}
+
+const Round1RouteChildren: Round1RouteChildren = {
+  Round1ResultsRoute: Round1ResultsRoute,
+}
+
+const Round1RouteWithChildren =
+  Round1Route._addFileChildren(Round1RouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
+  ResultsRoute: ResultsRoute,
+  Round1Route: Round1RouteWithChildren,
+  Round2Route: Round2Route,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  WaitingRoomRoute: WaitingRoomRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminLoginRoute: AdminLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { TopNav } from "@/components/dwr/TopNav";
 import { Panel } from "@/components/dwr/Panel";
 import { DwrButton } from "@/components/dwr/DwrButton";
@@ -7,6 +7,7 @@ import { StatusPill } from "@/components/dwr/StatusPill";
 import { Leaderboard } from "@/components/dwr/Leaderboard";
 import { Modal } from "@/components/dwr/Modal";
 import { DwrInput, DwrTextarea, Field } from "@/components/dwr/Form";
+import { LogOut } from "lucide-react";
 import { adminTeams, leaderboard, round2Challenges } from "@/lib/dwr-data";
 import {
   Play,
@@ -30,10 +31,51 @@ export const Route = createFileRoute("/admin/dashboard")({
 type Section = "overview" | "teams" | "rounds" | "challenges" | "leaderboard";
 
 function AdminDashboard() {
+  const navigate = useNavigate();
   const [section, setSection] = useState<Section>("overview");
   const [challengeModal, setChallengeModal] = useState<{ mode: "new" | "edit"; id?: string } | null>(
     null,
   );
+  const handleLogout = () => {
+  localStorage.removeItem("admin");
+
+  navigate({
+    to: "/admin/login",
+  });
+};
+  useEffect(() => {
+  const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = "";
+  };
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+  };
+}, []);
+  useEffect(() => {
+  window.history.pushState(null, "", window.location.href);
+
+  const handlePopState = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+
+  window.addEventListener("popstate", handlePopState);
+
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, []);
+
+  useEffect(() => {
+  const admin = localStorage.getItem("admin");
+
+  if (!admin) {
+    navigate({ to: "/admin/login" });
+  }
+}, [navigate]);
 
   const nav: { key: Section; label: string }[] = [
     { key: "overview", label: "Overview" },
@@ -59,10 +101,22 @@ function AdminDashboard() {
                 Admin <span className="text-magenta">Dashboard</span>
               </h1>
             </div>
-            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              <Radio className="h-3 w-3 text-neon animate-pulse" />
-              broadcasting · 32 teams connected
-            </div>
+            <div className="flex items-center gap-4">
+
+  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+    <Radio className="h-3 w-3 text-neon animate-pulse" />
+    broadcasting · 32 teams connected
+  </div>
+
+  <DwrButton
+    variant="danger"
+    size="sm"
+    onClick={handleLogout}
+  >
+    Logout
+  </DwrButton>
+
+</div>
           </div>
 
           {/* Tab strip */}

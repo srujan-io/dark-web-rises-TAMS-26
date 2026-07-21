@@ -1,110 +1,462 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { TopNav } from "@/components/dwr/TopNav";
 import { Panel } from "@/components/dwr/Panel";
 import { StatusPill } from "@/components/dwr/StatusPill";
-import { CountdownTimer } from "@/components/dwr/CountdownTimer";
-import { DwrButton } from "@/components/dwr/DwrButton";
 import { currentTeam } from "@/lib/dwr-data";
-import { Wifi, User } from "lucide-react";
+import { useEffect } from "react";
+import {
+  Users,
+  ShieldCheck,
+  Monitor,
+  CheckCircle2,
+  Circle,
+} from "lucide-react";
+import { DwrButton } from "@/components/dwr/DwrButton";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/waiting-room")({
   component: WaitingRoom,
 });
 
 function WaitingRoom() {
+  const navigate = useNavigate();
+
+/*
+Backend will eventually send this.
+For now keep false.
+*/
+const roundStarted = true;
+useEffect(() => {
+  if (roundStarted) {
+    navigate({
+      to: "/round-1",
+    });
+  }
+}, [roundStarted, navigate]);
   return (
     <div className="min-h-screen">
-      <TopNav teamName={currentTeam.name} teamId={currentTeam.id} status="waiting" />
-      <main className="relative mx-auto max-w-5xl px-6 py-10">
+      <TopNav
+        teamName={currentTeam.name}
+        teamId={currentTeam.id}
+        status="waiting"
+      />
+
+      <main className="relative mx-auto max-w-6xl px-6 py-10">
+
         <div className="pointer-events-none fixed inset-0 bg-grid opacity-20" />
 
+        <div className="pointer-events-none absolute left-1/2 top-44 h-96 w-96 -translate-x-1/2 rounded-full bg-neon/10 blur-3xl" />
+
         <div className="relative">
-          <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-            // stage · pre-launch
+
+          <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+            ROUND 01 • STANDBY
           </div>
-          <h1 className="mb-8 font-mono text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl">
-            Waiting <span className="text-neon">Room</span>
+
+          <h1 className="font-mono text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl">
+            Preparing for <span className="text-neon">Round 1</span>
           </h1>
 
-          <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+          <p className="mt-3 max-w-3xl text-muted-foreground">
+            Your team has been authenticated successfully. Please remain
+            seated and wait for the event host to begin Round 1.
+            Once the administrator starts the event,
+            you will automatically proceed into the competition.
+          </p>
+
+          <div className="mt-10 grid gap-5 lg:grid-cols-[2fr_1fr]">
+                      {/* LEFT COLUMN */}
+          <div className="space-y-5">
+
+            {/* Team Information */}
             <Panel className="p-6">
-              <div className="mb-4 flex items-center justify-between">
+
+              <div className="mb-5 flex items-center justify-between">
+
                 <div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                    team
+
+                  <div className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+                    Team Information
                   </div>
-                  <div className="font-mono text-2xl font-bold text-neon">{currentTeam.name}</div>
-                  <div className="font-mono text-xs text-muted-foreground">{currentTeam.id}</div>
+
+                  <div className="mt-2 font-mono text-3xl font-bold text-neon">
+                    {currentTeam.name}
+                  </div>
+
+                  <div className="font-mono text-xs text-muted-foreground">
+                    {currentTeam.id}
+                  </div>
+
                 </div>
-                <StatusPill status="waiting" label="Standby" />
+
+                <StatusPill status="waiting" label="Authenticated" />
+
               </div>
 
-              <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {currentTeam.members.map((m) => (
-                  <div
-                    key={m.id}
-                    className="rounded border border-border bg-surface/60 p-3 text-center"
-                  >
-                    <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-neon/40 bg-background">
-                      <User className="h-4 w-4 text-neon" />
-                    </div>
-                    <div className="truncate font-mono text-xs font-semibold text-foreground">
-                      {m.name}
-                    </div>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      {m.role}
-                    </div>
+              <div className="grid gap-4 md:grid-cols-2">
+
+                <div className="rounded-lg border border-border bg-surface/40 p-4">
+
+                  <div className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-neon">
+                    <Users className="h-4 w-4" />
+                    Player Order
                   </div>
-                ))}
+
+                  <div className="space-y-3">
+
+                    {currentTeam.members.map((member, index) => (
+
+                      <div
+                        key={member.id}
+                        className="flex items-center gap-3 rounded border border-border bg-background/40 p-3"
+                      >
+
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-neon/40 bg-neon/10 font-mono font-bold text-neon">
+                          {index + 1}
+                        </div>
+
+                        <div>
+
+                          <div className="font-mono text-sm font-semibold text-foreground">
+                            {member.name}
+                          </div>
+
+                          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                            Player {index + 1}
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                </div>
+
+                <div className="rounded-lg border border-border bg-surface/40 p-4">
+
+                  <div className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-neon">
+                    <ShieldCheck className="h-4 w-4" />
+                    Team Status
+                  </div>
+
+                  <div className="space-y-4">
+
+                    <Row
+                      label="Authentication"
+                      value={
+                        <span className="font-mono text-neon">
+                          Complete
+                        </span>
+                      }
+                    />
+
+                    <Row
+                      label="Round"
+                      value={
+                        <span className="font-mono">
+                          Round 01
+                        </span>
+                      }
+                    />
+
+                    <Row
+                      label="Mode"
+                      value={
+                        <span className="font-mono">
+                          Standby
+                        </span>
+                      }
+                    />
+
+                    <Row
+                      label="Device"
+                      value={
+                        <span className="font-mono">
+                          One Laptop
+                        </span>
+                      }
+                    />
+
+                  </div>
+
+                </div>
+
               </div>
 
-              <div className="rounded border border-neon/20 bg-neon/5 p-4">
-                <div className="mb-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-neon">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-neon" />
-                  system message
-                </div>
-                <p className="font-mono text-sm text-foreground animate-flicker">
-                  {"> "}Waiting for the administrator to start Round 1_
-                </p>
-              </div>
             </Panel>
 
-            <div className="flex flex-col gap-4">
-              <Panel className="flex flex-col items-center justify-center p-6">
-                <CountdownTimer initialSeconds={180} label="Launch In" size="lg" />
-              </Panel>
-              <Panel className="p-5">
-                <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                  system
+            {/* Round Overview */}
+
+            <Panel className="p-6">
+
+              <div className="mb-5 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+                Round Overview
+              </div>
+
+              <h2 className="font-mono text-2xl font-bold text-neon">
+                Lost In Translation
+              </h2>
+
+              <p className="mt-3 text-muted-foreground">
+                Your team will work together on a single laptop.
+                Each player receives the image generated by the previous player,
+                writes a new prompt, and passes the laptop to the next teammate.
+              </p>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-4">
+
+                <div className="rounded border border-border bg-surface/40 p-4 text-center">
+                  <div className="font-mono text-3xl font-black text-neon">
+                    5
+                  </div>
+                  <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
+                    Sets
+                  </div>
                 </div>
-                <ul className="space-y-2 text-sm">
-                  <Row label="Connection" value={<StatusPill status="online" />} />
-                  <Row label="Event Status" value={<span className="font-mono text-warning">Awaiting Start</span>} />
-                  <Row label="Round" value={<span className="font-mono text-foreground">01 · Prep</span>} />
-                  <Row label="Latency" value={<span className="font-mono text-neon">24 ms</span>} />
-                </ul>
-              </Panel>
-              {/* Placeholder — real transition is admin-triggered */}
-              <Link to="/round-1">
-                <DwrButton variant="ghost" className="w-full" icon={<Wifi className="h-4 w-4" />}>
-                  Simulate Round Start
-                </DwrButton>
-              </Link>
-            </div>
+
+                <div className="rounded border border-border bg-surface/40 p-4 text-center">
+                  <div className="font-mono text-3xl font-black text-neon">
+                    4
+                  </div>
+                  <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
+                    Players
+                  </div>
+                </div>
+
+                <div className="rounded border border-border bg-surface/40 p-4 text-center">
+                  <div className="font-mono text-3xl font-black text-neon">
+                    90s
+                  </div>
+                  <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
+                    Per Turn
+                  </div>
+                </div>
+
+                <div className="rounded border border-border bg-surface/40 p-4 text-center">
+                  <div className="font-mono text-3xl font-black text-neon">
+                    1
+                  </div>
+                  <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
+                    Laptop
+                  </div>
+                </div>
+
+              </div>
+
+            </Panel>
+
           </div>
+
+          {/* RIGHT COLUMN */}
+          <div className="space-y-5">
+                        {/* Rules */}
+            <Panel className="p-6">
+
+              <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+                Event Instructions
+              </div>
+
+              <div className="space-y-4">
+
+                <Rule
+                  title="One Laptop Per Team"
+                  desc="All four players will use the same system throughout Round 1."
+                />
+
+                <Rule
+                  title="One Player At A Time"
+                  desc="Only the current player should interact with the laptop."
+                />
+
+                <Rule
+                  title="Pass The Laptop"
+                  desc="After your turn ends, immediately hand the laptop to the next teammate."
+                />
+
+                <Rule
+                  title="Timer Starts On BEGIN"
+                  desc="The countdown only begins once the current player presses BEGIN."
+                />
+
+                <Rule
+                  title="Do Not Refresh"
+                  desc="Remain on this page until instructed otherwise."
+                />
+
+              </div>
+
+            </Panel>
+
+            {/* System Status */}
+
+            <Panel className="p-6">
+
+              <div className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+                <Monitor className="h-4 w-4 text-neon" />
+                System Status
+              </div>
+
+              <div className="space-y-4">
+
+                <Row
+                  label="Authentication"
+                  value={
+                    <span className="font-mono text-neon">
+                      Complete
+                    </span>
+                  }
+                />
+
+                <Row
+                  label="Backend"
+                  value={
+                    <span className="font-mono text-neon">
+                      Connected
+                    </span>
+                  }
+                />
+
+                <Row
+                  label="Round Status"
+                  value={
+                    <span className="font-mono text-warning">
+                      Waiting
+                    </span>
+                  }
+                />
+
+                <Row
+                  label="Connection"
+                  value={
+                    <span className="font-mono text-neon">
+                      Stable
+                    </span>
+                  }
+                />
+
+              </div>
+
+            </Panel>
+
+            {/* TEAM READY */}
+
+            <Panel
+              glow="neon"
+              className="border-neon/30 p-8 text-center"
+            >
+
+              <div className="mb-3 flex justify-center">
+                <CheckCircle2 className="h-12 w-12 text-neon" />
+              </div>
+
+              <div className="font-mono text-xl font-black uppercase tracking-widest text-neon">
+                TEAM READY
+              </div>
+
+              <p className="mt-4 text-sm text-muted-foreground">
+                Waiting for the event administrator to begin Round 1.
+              </p>
+
+              <div className="mt-6 flex items-center justify-center gap-2 font-mono text-xs uppercase tracking-[0.3em] text-neon">
+
+                <span className="h-2 w-2 animate-pulse rounded-full bg-neon" />
+
+                System Standing By
+
+              </div>
+              {!roundStarted && (
+  <DwrButton
+    variant="ghost"
+    className="mt-6 w-full"
+    icon={<ArrowLeft className="h-4 w-4" />}
+    onClick={() => navigate({ to: "/" })}
+  >
+    Exit Lobby
+  </DwrButton>
+)}
+
+            </Panel>
+
+          </div>
+          
+          </div>
+
         </div>
+
+        {/* Footer */}
+        <div className="mt-10 border-t border-border pt-6 text-center">
+
+          <div className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+            DARK WEB RISES
+          </div>
+
+          <div className="mt-2 font-mono text-lg font-bold text-neon">
+            Awaiting Administrator
+          </div>
+
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground">
+            Once the administrator starts Round 1, your team will be
+            automatically redirected into the competition.
+            Please remain seated and do not refresh or close this page.
+          </p>
+
+        </div>
+
       </main>
     </div>
   );
 }
 
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
+function Row({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
-    <li className="flex items-center justify-between">
+    <div className="flex items-center justify-between border-b border-border/50 pb-2 last:border-none">
+
       <span className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
         {label}
       </span>
+
       {value}
-    </li>
+
+    </div>
+  );
+}
+
+function Rule({
+  title,
+  desc,
+}: {
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div className="flex gap-3">
+
+      <Circle
+        className="mt-1 h-3 w-3 shrink-0 text-neon"
+        fill="currentColor"
+      />
+
+      <div>
+
+        <div className="font-mono text-sm font-semibold text-foreground">
+          {title}
+        </div>
+
+        <div className="mt-1 text-sm text-muted-foreground">
+          {desc}
+        </div>
+
+      </div>
+
+    </div>
   );
 }

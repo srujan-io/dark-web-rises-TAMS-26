@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { TopNav } from "@/components/dwr/TopNav";
 import { Panel } from "@/components/dwr/Panel";
@@ -7,9 +7,9 @@ import { DwrTextarea, Field } from "@/components/dwr/Form";
 import { CountdownTimer } from "@/components/dwr/CountdownTimer";
 import { ImageViewer } from "@/components/dwr/ImageViewer";
 import { ScoreCard } from "@/components/dwr/ScoreCard";
-import { StepProgress } from "@/components/dwr/ProgressBar";
 import { currentTeam, round1State } from "@/lib/dwr-data";
 import { Send, ArrowRight, Loader2, Sparkles, Users } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/round-1")({
   component: Round1,
@@ -20,9 +20,11 @@ type Phase = "prompt" | "loading" | "result";
 function Round1() {
   const [prompt, setPrompt] = useState("");
   const [phase, setPhase] = useState<Phase>("prompt");
+  const [confirmed, setConfirmed] = useState(false);
   const currentPlayer = currentTeam.members[round1State.currentPlayerIndex];
   const nextPlayer =
     currentTeam.members[(round1State.currentPlayerIndex + 1) % currentTeam.members.length];
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen">
@@ -43,25 +45,58 @@ function Round1() {
             </div>
             <CountdownTimer initialSeconds={90} label="Turn Timer" size="md" />
           </div>
-
-          {/* Progress row */}
           <Panel className="mb-6 p-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <StepProgress
-                total={round1State.totalImageSets}
-                current={round1State.currentImageSet}
-                label="Image Set"
-              />
-              <StepProgress
-                total={round1State.totalPlayers}
-                current={round1State.currentPlayerIndex + 1}
-                label="Player Pass"
-              />
-            </div>
-          </Panel>
+
+  <div className="grid gap-4 md:grid-cols-4">
+
+    <div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+        EVENT STATUS
+      </div>
+
+      <div className="mt-1 font-mono text-lg font-bold text-neon animate-pulse">
+        ● LIVE
+      </div>
+    </div>
+
+    <div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+        IMAGE SET
+      </div>
+
+      <div className="mt-1 font-mono text-lg font-bold text-foreground">
+        {round1State.currentImageSet} / {round1State.totalImageSets}
+      </div>
+    </div>
+
+    <div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+        PLAYER
+      </div>
+
+      <div className="mt-1 font-mono text-lg font-bold text-foreground">
+        {round1State.currentPlayerIndex + 1} / {round1State.totalPlayers}
+      </div>
+    </div>
+
+    <div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+        TEAM SCORE
+      </div>
+
+      <div className="mt-1 font-mono text-lg font-bold text-magenta">
+        {round1State.score}
+      </div>  
+    </div>
+
+  </div>
+
+</Panel>
+
+
 
           {/* Main split */}
-          <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+          <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
             {/* Left — image */}
             <div className="flex flex-col gap-4">
               <ImageViewer
@@ -69,44 +104,73 @@ function Round1() {
                 placeholder="// awaiting generation"
                 aspect="square"
               />
-              <div className="grid grid-cols-2 gap-3">
-                <ScoreCard label="Round Score" value={round1State.score.toLocaleString()} />
-                <ScoreCard
-                  label="Set"
-                  value={`${round1State.currentImageSet}/${round1State.totalImageSets}`}
-                  variant="magenta"
-                />
-              </div>
+              
             </div>
 
             {/* Right — action */}
             <div className="flex flex-col gap-4">
-              {/* Current player card */}
-              <Panel className="p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                      current player
-                    </div>
-                    <div className="mt-1 font-mono text-xl font-bold text-neon">
-                      {currentPlayer.name}
-                    </div>
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      {currentPlayer.role}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-right">
-                    <div>
-                      <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                        pass to
-                      </div>
-                      <div className="font-mono text-sm text-foreground">{nextPlayer.name}</div>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-neon" />
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                </div>
-              </Panel>
+              <Panel glow="neon" className="p-5">
+
+  {/* Header */}
+
+  <div className="flex items-center justify-between">
+
+    <div>
+
+      <div className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+        Active Player
+      </div>
+
+      <div className="mt-1 font-mono text-2xl font-bold text-neon">
+        {currentPlayer.name}
+      </div>
+
+      <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+        Player {round1State.currentPlayerIndex + 1}
+      </div>
+
+    </div>
+
+    <div className="rounded border border-neon/30 bg-neon/10 px-4 py-2 text-center">
+
+      <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+        PLAYER
+      </div>
+
+      <div className="mt-1 font-mono text-xl font-bold text-neon">
+        {round1State.currentPlayerIndex + 1}
+        <span className="text-muted-foreground">
+          /{round1State.totalPlayers}
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+  {/* Rules */}
+
+  <div className="mt-4 rounded border border-magenta/30 bg-magenta/5 p-4">
+
+    <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-magenta">
+      Turn Rules
+    </div>
+
+    <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+
+      <li>• You may submit only one prompt.</li>
+
+      <li>• Carefully review before confirming.</li>
+
+      <li>• Prompt cannot be edited after confirmation.</li>
+
+      <li>• Timer continues while you are thinking.</li>
+
+    </ul>
+
+  </div>
+
+</Panel>
 
               {/* Prompt / loading / result — same slot */}
               {phase === "prompt" && (
@@ -119,27 +183,103 @@ function Round1() {
                       setTimeout(() => setPhase("result"), 1600);
                     }}
                   >
-                    <Field label="Your Prompt" hint="Describe what you see. Precision wins signal.">
+                    <Field label="Your Prompt"hint="Only ONE prompt submission is allowed for this turn.">
                       <DwrTextarea
-                        rows={6}
-                        placeholder={"> a neon-lit alley in tokyo, rain..."}
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        required
-                      />
+    rows={14}
+    placeholder="Describe the image as accurately as possible..."
+    value={prompt}
+    disabled={confirmed}
+    onChange={(e) => setPrompt(e.target.value)}
+    required
+/>
                     </Field>
-                    <div className="mt-4 flex items-center justify-between">
-                      <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                        {prompt.length} chars
-                      </div>
-                      <DwrButton
-                        type="submit"
-                        icon={<Send className="h-4 w-4" />}
-                        disabled={!prompt.trim()}
-                      >
-                        Submit Prompt
-                      </DwrButton>
-                    </div>
+                    <div className="mt-5 space-y-4">
+
+  {/* Character Count + Review Button */}
+
+  <div className="flex items-center justify-between">
+
+    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+      {prompt.length} Characters
+    </div>
+
+    {!confirmed ? (
+
+      <DwrButton
+        type="button"
+        variant="secondary"
+        disabled={!prompt.trim()}
+        onClick={() => setConfirmed(true)}
+      >
+        Review Prompt
+      </DwrButton>
+
+    ) : (
+
+      <span className="font-mono text-xs text-neon">
+        ✓ Prompt Locked
+      </span>
+
+    )}
+
+  </div>
+
+  {/* Confirmation Card */}
+
+  {confirmed && (
+
+    <Panel
+      glow="magenta"
+      className="border-magenta/40 p-5"
+    >
+
+      <div className="font-mono text-[10px] uppercase tracking-[0.35em] text-magenta">
+        Final Confirmation
+      </div>
+
+      <p className="mt-3 text-sm text-muted-foreground">
+        You only get <span className="text-neon font-semibold">ONE</span> prompt submission.
+        Please verify your prompt before continuing.
+      </p>
+
+      {/* Prompt Preview */}
+
+      <div className="mt-4 rounded border border-border bg-background/50 p-4">
+
+        <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+          Prompt Preview
+        </div>
+
+        <p className="whitespace-pre-wrap text-sm text-foreground">
+          {prompt}
+        </p>
+
+      </div>
+
+      <div className="mt-5 flex justify-end gap-3">
+
+        <DwrButton
+          type="button"
+          variant="ghost"
+          onClick={() => setConfirmed(false)}
+        >
+          Edit Prompt
+        </DwrButton>
+
+        <DwrButton
+          type="submit"
+          icon={<Send className="h-4 w-4" />}
+        >
+          Confirm & Generate
+        </DwrButton>
+
+      </div>
+
+    </Panel>
+
+  )}
+
+</div>
                   </form>
                 </Panel>
               )}
@@ -174,9 +314,22 @@ function Round1() {
                       variant="magenta"
                       icon={<ArrowRight className="h-4 w-4" />}
                       onClick={() => {
-                        setPrompt("");
-                        setPhase("prompt");
-                      }}
+  const isLastPlayer =
+    round1State.currentPlayerIndex === round1State.totalPlayers - 1;
+
+  const isLastSet =
+    round1State.currentImageSet === round1State.totalImageSets;
+
+  if (isLastPlayer && isLastSet) {
+    navigate({ to: "/round-1/results" });
+    return;
+  }
+
+  // Temporary reset until backend logic is added
+  setPrompt("");
+  setConfirmed(false);
+  setPhase("prompt");
+}}
                     >
                       Continue
                     </DwrButton>
@@ -184,49 +337,7 @@ function Round1() {
                 </Panel>
               )}
 
-              {/* Round complete comparison — visual only */}
-              <Panel className="p-5">
-                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-                  set summary · appears after final pass
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <ImageViewer
-                    label="Original"
-                    placeholder="// original"
-                    aspect="square"
-                  />
-                  <ImageViewer
-                    label="Final Output"
-                    placeholder="// final"
-                    aspect="square"
-                  />
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  <div className="rounded border border-border bg-surface/60 p-3">
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      Similarity
-                    </div>
-                    <div className="font-mono text-2xl font-bold text-neon tabular-nums">
-                      {Math.round(round1State.lastSimilarity * 100)}%
-                    </div>
-                  </div>
-                  <div className="rounded border border-border bg-surface/60 p-3">
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                      Points Earned
-                    </div>
-                    <div className="font-mono text-2xl font-bold text-magenta tabular-nums">
-                      +{round1State.lastPointsAwarded}
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <Link to="/round-1/results">
-                    <DwrButton variant="secondary" icon={<ArrowRight className="h-4 w-4" />}>
-                      View Round Results
-                    </DwrButton>
-                  </Link>
-                </div>
-              </Panel>
+              
             </div>
           </div>
         </div>

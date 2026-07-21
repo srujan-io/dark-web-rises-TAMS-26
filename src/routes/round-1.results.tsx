@@ -22,12 +22,17 @@ function Round1Results() {
           <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
             // round 01 · complete
           </div>
-          <h1 className="mb-8 font-mono text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl">
-            Signal <span className="text-neon">Received</span>
-          </h1>
+          <h1 className="mb-2 font-mono text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl">
+  Round 1 <span className="text-neon">Complete</span>
+</h1>
+
+<p className="max-w-2xl text-muted-foreground">
+  Congratulations! Your team has completed all five image sets.
+  Below is your overall performance for Round 1.
+</p>
 
           <div className="grid gap-4 md:grid-cols-3">
-            <ScoreCard label="Round 1 Score" value={round1Results.score.toLocaleString()} />
+            <ScoreCard label="Total Score" value={round1Results.score.toLocaleString()} />
             <ScoreCard
               label="Current Rank"
               value={`#${String(round1Results.rank).padStart(2, "0")}`}
@@ -51,6 +56,26 @@ function Round1Results() {
               </div>
             </Panel>
           </div>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+
+  <ScoreCard
+    label="Best Similarity"
+    value="94%"
+    variant="neon"
+  />
+
+  <ScoreCard
+    label="Average Similarity"
+    value="87%"
+  />
+
+  <ScoreCard
+    label="Best Set"
+    value="SET 04"
+    variant="magenta"
+  />
+
+</div>
 
           <Panel className="mt-6 overflow-hidden">
             <div className="border-b border-border px-5 py-3">

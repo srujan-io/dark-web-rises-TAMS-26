@@ -1,10 +1,17 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TopNav } from "@/components/dwr/TopNav";
 import { Panel } from "@/components/dwr/Panel";
 import { DwrButton } from "@/components/dwr/DwrButton";
 import { DwrInput, Field } from "@/components/dwr/Form";
-import { ArrowRight, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Users,
+  Eye,
+  EyeOff,
+  Loader2,
+} from "lucide-react";
 
 export const Route = createFileRoute("/login")({
   component: TeamLogin,
@@ -12,65 +19,183 @@ export const Route = createFileRoute("/login")({
 
 function TeamLogin() {
   const navigate = useNavigate();
+
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="min-h-screen">
       <TopNav />
+
+      {/* Background Glow */}
+      <div className="pointer-events-none absolute left-1/2 top-56 h-80 w-80 -translate-x-1/2 rounded-full bg-neon/10 blur-3xl" />
+
       <main className="relative mx-auto flex min-h-[calc(100vh-64px)] max-w-md flex-col justify-center px-4 py-12">
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-30" />
-        <Panel variant="elevated" className="relative p-8" glow="neon">
-          <div className="mb-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+
+        {/* Back Button */}
+        <button
+          onClick={() => navigate({ to: "/" })}
+          className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-neon"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
+        </button>
+
+        {/* Login Card */}
+        <Panel
+          variant="elevated"
+          glow="neon"
+          className={`relative p-8 transition-all duration-700 ${
+            mounted
+              ? "translate-y-0 opacity-100"
+              : "translate-y-6 opacity-0"
+          }`}
+        >
+          {/* Header */}
+          <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
             <Users className="h-3 w-3 text-neon" />
-            team access
+            Team Login
           </div>
-          <h1 className="mb-1 font-mono text-2xl font-black uppercase tracking-tight text-foreground">
-            Enter <span className="text-neon">Credentials</span>
+
+          <h1 className="mb-2 font-mono text-3xl font-black uppercase tracking-tight text-foreground">
+            Access <span className="text-neon">Dark Web Rises</span>
           </h1>
-          <p className="mb-6 text-sm text-muted-foreground">
-            Authenticate your squad to join the grid.
+
+          <p className="mb-8 text-sm text-muted-foreground">
+            Enter your assigned Team ID and Password to participate in the
+            event.
           </p>
 
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
+
+              setError("");
+              setLoading(true);
+
+              // Backend will replace this
+              await new Promise((resolve) => setTimeout(resolve, 1500));
+
+              setLoading(false);
+
               navigate({ to: "/waiting-room" });
             }}
-            className="space-y-4"
+            className="space-y-5"
           >
             <Field label="Team ID">
               <DwrInput
                 value={id}
                 onChange={(e) => setId(e.target.value)}
-                placeholder="TEAM-042"
+                placeholder="TEAM-001"
                 autoComplete="username"
                 required
               />
             </Field>
-            <Field label="Team Password">
-              <DwrInput
-                type="password"
-                value={pw}
-                onChange={(e) => setPw(e.target.value)}
-                placeholder="••••••••"
-                autoComplete="current-password"
-                required
-              />
-            </Field>
 
-            <DwrButton
+            <Field label="Password">
+              <div className="relative">
+                <DwrInput
+                  type={showPassword ? "text" : "password"}
+                  value={pw}
+                  onChange={(e) => setPw(e.target.value)}
+                  placeholder="Enter Password"
+                  autoComplete="current-password"
+                  required
+                  className="pr-12"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-neon"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </Field>
+                        <DwrButton
               type="submit"
               size="lg"
               className="w-full"
-              icon={<ArrowRight className="h-4 w-4" />}
+              disabled={loading}
+              icon={
+                loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ArrowRight className="h-4 w-4" />
+                )
+              }
             >
-              Login
+              {loading ? "Authenticating..." : "Login"}
             </DwrButton>
+
+            {error && (
+              <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-center text-sm text-destructive">
+                {error}
+              </div>
+            )}
           </form>
 
-          <div className="mt-6 border-t border-border pt-4 text-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            // credentials distributed at check-in
+          {/* Event Status */}
+          <div className="mt-8 rounded-lg border border-neon/20 bg-surface/50 p-4 transition-colors hover:border-neon/40">
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Event Status
+            </div>
+
+            <div className="mt-3 flex items-center gap-3">
+              <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-neon" />
+
+              <div>
+                <div className="font-mono text-sm font-semibold text-neon">
+                  Authentication Gateway Online
+                </div>
+
+                <div className="mt-1 text-xs text-muted-foreground">
+                  Waiting for Round 1 to begin.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Help Section */}
+          <div className="mt-6 rounded-lg border border-border bg-background/40 p-4">
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Need Assistance?
+            </div>
+
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              If you are unable to log in, please contact any event volunteer or
+              visit the registration desk for assistance.
+            </p>
+          </div>
+                    {/* Footer */}
+          <div className="mt-8 border-t border-border pt-5 text-center">
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Official Event Portal
+            </div>
+
+            <div className="mt-2 font-mono text-xs uppercase tracking-widest text-foreground">
+              DARK WEB RISES
+            </div>
+
+            <div className="mt-1 text-[11px] text-muted-foreground">
+              TAMS 2026 • PES University
+            </div>
           </div>
         </Panel>
       </main>

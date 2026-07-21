@@ -77,13 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Dark Web Rises — Enter the Grid" },
+      { title: "Dark Web Rises" },
       {
         name: "description",
         content:
           "Dark Web Rises: a flagship university technical event blending prompt-relay imagegen and CTF challenges. Assemble your team, enter the grid.",
       },
-      { property: "og:title", content: "Dark Web Rises — Enter the Grid" },
+      { property: "og:title", content: "Dark Web Rises" },
       {
         property: "og:description",
         content:
@@ -95,7 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/logos/cropped_circle_image (1).png", type: "image/png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

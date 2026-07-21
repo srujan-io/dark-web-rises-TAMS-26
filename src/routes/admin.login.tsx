@@ -4,7 +4,11 @@ import { TopNav } from "@/components/dwr/TopNav";
 import { Panel } from "@/components/dwr/Panel";
 import { DwrButton } from "@/components/dwr/DwrButton";
 import { DwrInput, Field } from "@/components/dwr/Form";
-import { ShieldAlert, ArrowRight } from "lucide-react";
+import {
+  ShieldAlert,
+  ArrowRight,
+  ArrowLeft,
+} from "lucide-react";
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLogin,
@@ -12,32 +16,61 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLogin() {
   const navigate = useNavigate();
+
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
 
   return (
     <div className="min-h-screen">
       <TopNav />
+
       <main className="relative mx-auto flex min-h-[calc(100vh-64px)] max-w-md flex-col justify-center px-4 py-12">
+
+        {/* Background */}
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-30" />
-        <Panel variant="elevated" className="relative p-8" glow="magenta">
-          <div className="mb-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-magenta">
+
+        {/* Back Button */}
+        <button
+          onClick={() => navigate({ to: "/" })}
+          className="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-magenta"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
+        </button>
+
+        <Panel
+          variant="elevated"
+          className="relative p-8"
+          glow="magenta"
+        >
+          {/* Header */}
+          <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-magenta">
             <ShieldAlert className="h-3 w-3" />
-            admin console
+            Admin Console
           </div>
-          <h1 className="mb-1 font-mono text-2xl font-black uppercase tracking-tight text-foreground">
+
+          <h1 className="mb-2 font-mono text-3xl font-black uppercase tracking-tight text-foreground">
             Restricted <span className="text-magenta">Access</span>
           </h1>
-          <p className="mb-6 text-sm text-muted-foreground">
-            Operations personnel only. All actions are logged.
+
+          <p className="mb-8 text-sm text-muted-foreground">
+            Authorized event administrators only. All operations are monitored
+            and logged.
           </p>
 
+          {/* Login Form */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              navigate({ to: "/admin/dashboard" });
+
+              // Temporary frontend login
+              localStorage.setItem("admin", "true");
+
+              navigate({
+                to: "/admin/dashboard",
+              });
             }}
-            className="space-y-4"
+            className="space-y-5"
           >
             <Field label="Admin ID">
               <DwrInput
@@ -48,16 +81,18 @@ function AdminLogin() {
                 required
               />
             </Field>
+
             <Field label="Password">
               <DwrInput
                 type="password"
                 value={pw}
                 onChange={(e) => setPw(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Enter Password"
                 autoComplete="current-password"
                 required
               />
             </Field>
+
             <DwrButton
               type="submit"
               size="lg"
@@ -65,9 +100,26 @@ function AdminLogin() {
               className="w-full"
               icon={<ArrowRight className="h-4 w-4" />}
             >
-              Login
+              Login to Dashboard
             </DwrButton>
           </form>
+
+          {/* Security Notice */}
+          <div className="mt-8 rounded-lg border border-magenta/20 bg-magenta/5 p-4">
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-magenta">
+              Security Status
+            </div>
+
+            <div className="mt-2 flex items-center gap-2 font-mono text-sm text-magenta">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-magenta" />
+              Administrative Access Only
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-8 border-t border-border pt-4 text-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            DARK WEB RISES • ADMIN CONSOLE • TAMS 2026
+          </div>
         </Panel>
       </main>
     </div>

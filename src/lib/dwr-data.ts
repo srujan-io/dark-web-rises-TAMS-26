@@ -6,6 +6,8 @@
 import type { Challenge } from "@/components/dwr/ChallengeCard";
 import type { LeaderboardEntry } from "@/components/dwr/Leaderboard";
 
+
+
 export const currentTeam = {
   id: "TEAM-042",
   name: "Null_Pointer",
@@ -17,18 +19,31 @@ export const currentTeam = {
   ],
 };
 
+/*
+ * Reference images for Round 1.
+ * Backend will eventually send these.
+ */
+export const round1Images = [
+  "/round1/set1.jpg",
+  "/round1/set2.jpg",
+  "/round1/set3.jpg",
+  "/round1/set4.jpg",
+  "/round1/set5.jpg",
+];
+
 export const round1State = {
-  currentImageSet: 2,
   totalImageSets: 5,
-  currentPlayerIndex: 2, // 0-indexed
   totalPlayers: 4,
-  score: 1_240,
+
+  score: 1240,
+  position: 12,
+
   lastSimilarity: 0.78,
   lastPointsAwarded: 320,
 };
 
 export const round1Results = {
-  score: 3_820,
+  score: 3820,
   rank: 7,
   totalTeams: 32,
   status: "qualified" as const,
@@ -53,23 +68,23 @@ export const round2Challenges: Challenge[] = [
 ];
 
 export const leaderboard: LeaderboardEntry[] = [
-  { rank: 1, teamId: "TEAM-007", teamName: "Segfault_Sirens", score: 6_420, round1: 4_120, round2: 2_300, status: "active" },
-  { rank: 2, teamId: "TEAM-013", teamName: "Kernel_Kittens", score: 6_180, round1: 3_980, round2: 2_200, status: "active" },
-  { rank: 3, teamId: "TEAM-021", teamName: "0xDEADBEEF", score: 5_910, round1: 3_760, round2: 2_150, status: "active" },
-  { rank: 4, teamId: "TEAM-004", teamName: "Recursive_Rebels", score: 5_540, round1: 3_640, round2: 1_900, status: "active" },
-  { rank: 5, teamId: "TEAM-018", teamName: "Buffer_Overload", score: 5_220, round1: 3_520, round2: 1_700, status: "active" },
-  { rank: 6, teamId: "TEAM-029", teamName: "Bit_Benders", score: 4_890, round1: 3_390, round2: 1_500, status: "active" },
-  { rank: 7, teamId: "TEAM-042", teamName: "Null_Pointer", score: 4_720, round1: 3_820, round2: 900, status: "active" },
-  { rank: 8, teamId: "TEAM-011", teamName: "Race_Condition", score: 4_310, round1: 3_210, round2: 1_100, status: "active" },
-  { rank: 9, teamId: "TEAM-035", teamName: "Syntax_Errors", score: 3_980, round1: 3_180, round2: 800, status: "active" },
-  { rank: 10, teamId: "TEAM-002", teamName: "Void_Runners", score: 3_640, round1: 2_940, round2: 700, status: "active" },
+  { rank: 1, teamId: "TEAM-007", teamName: "Segfault_Sirens", score: 6420, round1: 4120, round2: 2300, status: "active" },
+  { rank: 2, teamId: "TEAM-013", teamName: "Kernel_Kittens", score: 6180, round1: 3980, round2: 2200, status: "active" },
+  { rank: 3, teamId: "TEAM-021", teamName: "0xDEADBEEF", score: 5910, round1: 3760, round2: 2150, status: "active" },
+  { rank: 4, teamId: "TEAM-004", teamName: "Recursive_Rebels", score: 5540, round1: 3640, round2: 1900, status: "active" },
+  { rank: 5, teamId: "TEAM-018", teamName: "Buffer_Overload", score: 5220, round1: 3520, round2: 1700, status: "active" },
+  { rank: 6, teamId: "TEAM-029", teamName: "Bit_Benders", score: 4890, round1: 3390, round2: 1500, status: "active" },
+  { rank: 7, teamId: "TEAM-042", teamName: "Null_Pointer", score: 4720, round1: 3820, round2: 900, status: "active" },
+  { rank: 8, teamId: "TEAM-011", teamName: "Race_Condition", score: 4310, round1: 3210, round2: 1100, status: "active" },
+  { rank: 9, teamId: "TEAM-035", teamName: "Syntax_Errors", score: 3980, round1: 3180, round2: 800, status: "active" },
+  { rank: 10, teamId: "TEAM-002", teamName: "Void_Runners", score: 3640, round1: 2940, round2: 700, status: "active" },
 ];
 
 export const adminTeams = [
-  { id: "TEAM-007", name: "Segfault_Sirens", status: "live", progress: "R2 — 4/8", score: 6_420 },
-  { id: "TEAM-013", name: "Kernel_Kittens", status: "live", progress: "R2 — 4/8", score: 6_180 },
-  { id: "TEAM-021", name: "0xDEADBEEF", status: "live", progress: "R2 — 3/8", score: 5_910 },
-  { id: "TEAM-042", name: "Null_Pointer", status: "live", progress: "R2 — 2/8", score: 4_720 },
-  { id: "TEAM-011", name: "Race_Condition", status: "paused", progress: "R2 — 2/8", score: 4_310 },
-  { id: "TEAM-055", name: "Off_By_One", status: "offline", progress: "R1 — 3/5", score: 1_820 },
+  { id: "TEAM-007", name: "Segfault_Sirens", status: "live", progress: "R2 — 4/8", score: 6420 },
+  { id: "TEAM-013", name: "Kernel_Kittens", status: "live", progress: "R2 — 4/8", score: 6180 },
+  { id: "TEAM-021", name: "0xDEADBEEF", status: "live", progress: "R2 — 3/8", score: 5910 },
+  { id: "TEAM-042", name: "Null_Pointer", status: "live", progress: "R2 — 2/8", score: 4720 },
+  { id: "TEAM-011", name: "Race_Condition", status: "paused", progress: "R2 — 2/8", score: 4310 },
+  { id: "TEAM-055", name: "Off_By_One", status: "offline", progress: "R1 — 3/5", score: 1820 },
 ] as const;

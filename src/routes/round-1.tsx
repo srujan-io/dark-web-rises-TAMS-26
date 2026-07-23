@@ -7,10 +7,13 @@ import { DwrTextarea, Field } from "@/components/dwr/Form";
 import { CountdownTimer } from "@/components/dwr/CountdownTimer";
 import { ImageViewer } from "@/components/dwr/ImageViewer";
 import { ScoreCard } from "@/components/dwr/ScoreCard";
-import { currentTeam, round1State } from "@/lib/dwr-data";
 import { Send, ArrowRight, Loader2, Sparkles, Users } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
-
+import {
+  currentTeam,
+  round1State,
+  round1Images,
+} from "@/lib/dwr-data";
 export const Route = createFileRoute("/round-1")({
   component: Round1,
 });
@@ -18,12 +21,23 @@ export const Route = createFileRoute("/round-1")({
 type Phase = "prompt" | "loading" | "result";
 
 function Round1() {
+  
   const [prompt, setPrompt] = useState("");
   const [phase, setPhase] = useState<Phase>("prompt");
   const [confirmed, setConfirmed] = useState(false);
-  const currentPlayer = currentTeam.members[round1State.currentPlayerIndex];
-  const nextPlayer =
-    currentTeam.members[(round1State.currentPlayerIndex + 1) % currentTeam.members.length];
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+const [currentSet, setCurrentSet] = useState(1);
+
+const currentPlayer =
+  currentTeam.members[currentPlayerIndex];
+
+const nextPlayer =
+  currentTeam.members[
+    (currentPlayerIndex + 1) %
+      currentTeam.members.length
+  ];
+const currentReference =
+  round1Images[currentSet - 1];
   const navigate = useNavigate();
 
   return (
@@ -65,7 +79,7 @@ function Round1() {
       </div>
 
       <div className="mt-1 font-mono text-lg font-bold text-foreground">
-        {round1State.currentImageSet} / {round1State.totalImageSets}
+        {currentSet} / {round1State.totalImageSets}
       </div>
     </div>
 
@@ -75,7 +89,7 @@ function Round1() {
       </div>
 
       <div className="mt-1 font-mono text-lg font-bold text-foreground">
-        {round1State.currentPlayerIndex + 1} / {round1State.totalPlayers}
+        {currentPlayerIndex + 1} / {round1State.totalPlayers}
       </div>
     </div>
 
@@ -99,11 +113,26 @@ function Round1() {
           <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
             {/* Left — image */}
             <div className="flex flex-col gap-4">
-              <ImageViewer
-                label="Current Image · Reference"
-                placeholder="// awaiting generation"
-                aspect="square"
-              />
+              {currentPlayerIndex === 0 ? (
+
+  // P1 sees reference image
+
+  <img
+    src={currentReference}
+    className="w-full rounded-xl"
+  />
+
+) : (
+
+  // Everyone else sees AI output
+
+  <ImageViewer
+    label="Generated Image"
+    placeholder="// awaiting AI output"
+    aspect="square"
+  />
+
+)}
               
             </div>
 
@@ -126,7 +155,7 @@ function Round1() {
       </div>
 
       <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-        Player {round1State.currentPlayerIndex + 1}
+        Player {currentPlayerIndex + 1}
       </div>
 
     </div>
@@ -138,7 +167,7 @@ function Round1() {
       </div>
 
       <div className="mt-1 font-mono text-xl font-bold text-neon">
-        {round1State.currentPlayerIndex + 1}
+        {currentPlayerIndex + 1}
         <span className="text-muted-foreground">
           /{round1State.totalPlayers}
         </span>
@@ -315,17 +344,29 @@ function Round1() {
                       icon={<ArrowRight className="h-4 w-4" />}
                       onClick={() => {
   const isLastPlayer =
-    round1State.currentPlayerIndex === round1State.totalPlayers - 1;
+    currentPlayerIndex === round1State.totalPlayers - 1;
 
   const isLastSet =
-    round1State.currentImageSet === round1State.totalImageSets;
+    currentSet === round1State.totalImageSets;
 
+  // Competition finished
   if (isLastPlayer && isLastSet) {
     navigate({ to: "/round-1/results" });
     return;
   }
 
-  // Temporary reset until backend logic is added
+  // Last player of current image set
+  if (isLastPlayer) {
+    setCurrentPlayerIndex(0);
+    setCurrentSet((prev) => prev + 1);
+  }
+
+  // Otherwise move to next player
+  else {
+    setCurrentPlayerIndex((prev) => prev + 1);
+  }
+
+  // Reset UI
   setPrompt("");
   setConfirmed(false);
   setPhase("prompt");

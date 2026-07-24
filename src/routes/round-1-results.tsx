@@ -6,7 +6,8 @@ import { DwrButton } from "@/components/dwr/DwrButton";
 import { currentTeam, round1Results } from "@/lib/dwr-data";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
-export const Route = createFileRoute("/round-1/results")({
+
+export const Route = createFileRoute("/round-1-results")({
   component: Round1Results,
 });
 

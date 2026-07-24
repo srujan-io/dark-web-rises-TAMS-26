@@ -14,20 +14,25 @@ import {
   round1State,
   round1Images,
 } from "@/lib/dwr-data";
+import { useRef } from "react";
 export const Route = createFileRoute("/round-1")({
   component: Round1,
 });
 
 type Phase = "prompt" | "loading" | "result";
 
+
+
 function Round1() {
+  const timerTriggered = useRef(false);
+  
   
   const [prompt, setPrompt] = useState("");
   const [phase, setPhase] = useState<Phase>("prompt");
   const [confirmed, setConfirmed] = useState(false);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 const [currentSet, setCurrentSet] = useState(1);
-
+const [promptLocked, setPromptLocked] = useState(false);
 const currentPlayer =
   currentTeam.members[currentPlayerIndex];
 
@@ -39,6 +44,41 @@ const nextPlayer =
 const currentReference =
   round1Images[currentSet - 1];
   const navigate = useNavigate();
+const [timeExpired, setTimeExpired] = useState(false);
+
+const advanceTurn = () => {
+  const isLastPlayer =
+    currentPlayerIndex === round1State.totalPlayers - 1;
+
+  const isLastSet =
+    currentSet === round1State.totalImageSets;
+
+  if (isLastPlayer && isLastSet) {
+    navigate({
+  from: "/round-1",
+  to: "/round-1-results",
+});
+    return;
+  }
+
+  if (isLastPlayer) {
+    setCurrentPlayerIndex(0);
+    setCurrentSet((prev) => prev + 1);
+  } else {
+    setCurrentPlayerIndex((prev) => prev + 1);
+  }
+  timerTriggered.current = false;
+  setPrompt("");
+  setConfirmed(false);
+  setPhase("prompt");
+  setPromptLocked(false);
+};
+console.log({
+  currentPlayerIndex,
+  currentSet,
+  currentPlayer,
+  nextPlayer,
+});
 
   return (
     <div className="min-h-screen">
@@ -57,7 +97,21 @@ const currentReference =
                 Lost In <span className="text-neon">Translation</span>
               </h1>
             </div>
-            <CountdownTimer initialSeconds={90} label="Turn Timer" size="md" />
+            <CountdownTimer
+  key={`${currentSet}-${currentPlayerIndex}`}
+  initialSeconds={90}
+  label="Turn Timer"
+  size="md"
+  onComplete={() => {
+    if (timerTriggered.current) return;
+
+    timerTriggered.current = true;
+
+    setPromptLocked(true);
+
+
+  }}
+/>
           </div>
           <Panel className="mb-6 p-4">
 
@@ -217,7 +271,7 @@ const currentReference =
     rows={14}
     placeholder="Describe the image as accurately as possible..."
     value={prompt}
-    disabled={confirmed}
+    disabled={confirmed || promptLocked}
     onChange={(e) => setPrompt(e.target.value)}
     required
 />
@@ -237,7 +291,7 @@ const currentReference =
       <DwrButton
         type="button"
         variant="secondary"
-        disabled={!prompt.trim()}
+        disabled={!prompt.trim() || promptLocked}
         onClick={() => setConfirmed(true)}
       >
         Review Prompt
@@ -246,16 +300,33 @@ const currentReference =
     ) : (
 
       <span className="font-mono text-xs text-neon">
-        ✓ Prompt Locked
+        {promptLocked ? "⏱ Time Expired" : "✓ Prompt Locked"}
       </span>
 
     )}
 
   </div>
 
+{promptLocked && (
+  <div className="rounded border border-red-500/40 bg-red-500/10 p-3 text-center font-mono text-xs uppercase tracking-widest text-red-400">
+    TIME EXPIRED • PROMPT LOCKED
+  </div>
+)}
+{promptLocked && phase === "prompt" && (
+  <div className="mt-4 flex justify-end">
+    <DwrButton
+  variant="magenta"
+  icon={<ArrowRight className="h-4 w-4" />}
+  onClick={advanceTurn}
+>
+  Proceed to Next Player
+</DwrButton>
+  </div>
+)}
   {/* Confirmation Card */}
 
   {confirmed && (
+    
 
     <Panel
       glow="magenta"
@@ -287,11 +358,13 @@ const currentReference =
 
       <div className="mt-5 flex justify-end gap-3">
 
-        <DwrButton
-          type="button"
-          variant="ghost"
-          onClick={() => setConfirmed(false)}
-        >
+<DwrButton
+  type="button"
+  variant="ghost"
+  disabled={promptLocked}
+  onClick={() => setConfirmed(false)}
+>
+        
           Edit Prompt
         </DwrButton>
 
@@ -339,41 +412,13 @@ const currentReference =
                     <div className="font-mono text-xs text-muted-foreground">
                       Hand the laptop to <span className="text-neon">{nextPlayer.name}</span>
                     </div>
-                    <DwrButton
-                      variant="magenta"
-                      icon={<ArrowRight className="h-4 w-4" />}
-                      onClick={() => {
-  const isLastPlayer =
-    currentPlayerIndex === round1State.totalPlayers - 1;
-
-  const isLastSet =
-    currentSet === round1State.totalImageSets;
-
-  // Competition finished
-  if (isLastPlayer && isLastSet) {
-    navigate({ to: "/round-1/results" });
-    return;
-  }
-
-  // Last player of current image set
-  if (isLastPlayer) {
-    setCurrentPlayerIndex(0);
-    setCurrentSet((prev) => prev + 1);
-  }
-
-  // Otherwise move to next player
-  else {
-    setCurrentPlayerIndex((prev) => prev + 1);
-  }
-
-  // Reset UI
-  setPrompt("");
-  setConfirmed(false);
-  setPhase("prompt");
-}}
-                    >
-                      Continue
-                    </DwrButton>
+<DwrButton
+  variant="magenta"
+  icon={<ArrowRight className="h-4 w-4" />}
+  onClick={advanceTurn}
+>
+  Continue
+</DwrButton>
                   </div>
                 </Panel>
               )}

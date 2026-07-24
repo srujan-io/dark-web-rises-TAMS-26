@@ -8,17 +8,34 @@ export function CountdownTimer({
   label = "Time Remaining",
   className,
   size = "md",
+  onComplete,
 }: {
   initialSeconds?: number;
   label?: string;
   className?: string;
   size?: "sm" | "md" | "lg";
+  onComplete?: () => void;
 }) {
   const [s, setS] = useState(initialSeconds);
-  useEffect(() => {
-    const id = setInterval(() => setS((x) => (x > 0 ? x - 1 : 0)), 1000);
-    return () => clearInterval(id);
-  }, []);
+
+useEffect(() => {
+  setS(initialSeconds);
+}, [initialSeconds]);
+ useEffect(() => {
+  const id = setInterval(() => {
+    setS((x) => {
+      if (x <= 1) {
+        clearInterval(id);
+        onComplete?.();
+        return 0;
+      }
+
+      return x - 1;
+    });
+  }, 1000);
+
+  return () => clearInterval(id);
+}, []);
 
   const mm = String(Math.floor(s / 60)).padStart(2, "0");
   const ss = String(s % 60).padStart(2, "0");
